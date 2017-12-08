@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 15:00:03 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/07 20:18:47 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/07 20:43:32 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,13 @@ typedef struct	s_stack {
 	int		size;
 }				t_stack;
 
+t_link	*create_link(int num);
+
 void	swap_a(t_link **stack_a, t_link **stack_b);
 void	swap_b(t_link **stack_a, t_link **stack_b);
+void	swap_ab(t_link **stack_a, t_link **stack_b);
+void	push_a(t_link **stack_a, t_link **stack_b);
+void	push_b(t_link **stack_a, t_link **stack_b);
 
 struct	s_operations {
 	char	*op;

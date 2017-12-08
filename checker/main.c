@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/07 20:25:23 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/07 21:40:13 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,33 @@
 ** sa : swap a - swap the first 2 elements at the top of stack a. Do nothing if there
 ** is only one or no elements).
 */
+/*
+**
+ss : sa and sb at the same time.
+pa : push a - take the first element at the top of b and put it at the top of a. Do
+nothing if b is empty.
+pb : push b - take the first element at the top of a and put it at the top of b. Do
+nothing if a is empty.
+ra : rotate a - shift up all elements of stack a by 1. The first element becomes
+the last one.
+rb : rotate b - shift up all elements of stack b by 1. The first element becomes
+the last one.
+rr : ra and rb at the same time.
+rra : reverse rotate a - shift down all elements of stack a by 1. The flast element
+becomes the first one.
+8
+Push_swap Because Swap_push isn’t as natural
+rrb : reverse rotate b - shift down all elements of stack b by 1. The flast element
+becomes the first one.
+rrr : rra and rrb at the same time.
+*/
 
 struct s_operations operations[] = {
 	{"sa", &swap_a},
 	{"sb", &swap_b},
-	// {"ss", &swap_ab}
+	{"ss", &swap_ab},
+	{"pa", &push_a},
+	{"pb", &push_b}
 };
 
 t_link	*create_link(int num)
@@ -59,6 +81,20 @@ int		perform_ops(char **oplist, t_link *stack_a)
 		else
 			i++;
 	}
+	printf("\n-------Greedymother fucker--=-----\n");
+	while (stack_b)
+	{
+		printf("stack_b->prev = %p\n", stack_b->prev);
+		printf("stack_b->n = (%d) %d\n", stack_b->prev->n, stack_b->n);
+		stack_b = stack_b->next;
+	}
+	while (stack_a)
+	{
+		printf("stack_a->prev = %p\n", stack_a->prev);
+		printf("stack_a->n = (%d) %d\n", stack_a->prev->n, stack_a->n);
+		stack_a = stack_a->next;
+	}
+	printf("\n-------End of Dick--=-----\n");
 }
 
 int		sort_check(char **oplist, t_link *stack_a)
