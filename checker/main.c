@@ -3,48 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
+/*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/07 17:52:06 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/07 20:25:23 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_checker.h"
 #include <stdlib.h>
 
+/*
+** sa : swap a - swap the first 2 elements at the top of stack a. Do nothing if there
+** is only one or no elements).
+*/
+
 struct s_operations operations[] = {
-	// {"sa", &swap_a},
-	// {"sb", &swap_b},
+	{"sa", &swap_a},
+	{"sb", &swap_b},
 	// {"ss", &swap_ab}
 };
-
-int		is_sorted(t_stack *stack_a, int size)
-{
-	int i;
-
-	i = 0;
-	while (stack_a->link && stack_a->link->next)
-	{
-		if (stack_a->link->next->n < stack_a->link->n)
-			return (0);
-		stack_a->link = stack_a->link->next;
-	}
-	return (1);
-
-	// while (i < (size - 2))
-	// {
-	// 	if (stack_a[i + 1] < stack_a[i])
-	// 	{
-	// 		printf("KO (%d) %d > %d\n", i, stack_a[i + 1], stack_a[i]);
-	// 		return (0);
-	// 	}
-	// 	else
-	// 		printf("OK (%d) %d > %d\n", i, stack_a[i + 1], stack_a[i]);
-	// 	i++;
-	// }
-	// return (1);
-}
 
 t_link	*create_link(int num)
 {
@@ -57,145 +35,182 @@ t_link	*create_link(int num)
 		return (NULL);
 	}
 	link->n = num;
-	link->set = '1';
 	return (link);
 }
 
-t_stack	*create_stack(void)
+int		perform_ops(char **oplist, t_link *stack_a)
 {
-	// t_link *link;
-	t_stack *stack;
+	t_link	*stack_b;
+	t_link	*save;
+	int		i;
 
-	// link = create_link(0);
-	stack = (t_stack *)ft_memalloc(sizeof(t_stack));
-	if (!stack)
+	i = 0;
+	stack_b = NULL;
+	while (operations[i].op && *oplist)
+	{
+		printf("bitch op = %s\n", operations[i].op);
+		if (!ft_strcmp(operations[i].op, *oplist))
+		{
+			operations[i].func(&stack_a, &stack_b);
+			oplist++;
+			printf("oplist = %s\n", *oplist);
+			i = 0;
+		}
+		else
+			i++;
+	}
+}
+
+int		sort_check(char **oplist, t_link *stack_a)
+{
+	return (perform_ops(oplist, stack_a));
+}
+
+t_link	*populate(int argc, char *argv[])
+{
+	t_link	*links;
+	t_link	*save;
+	int i;
+
+	links = create_link(0);
+	save = links;
+	i = 1;
+	while (i < argc)
+	{
+		links->next = create_link(ft_atoi(argv[i]));
+		links->next->prev = links;
+		save->next->prev = links->next;
+		links = links->next;
+		i++;
+	}
+	return (save->next);
+}
+
+char	**fill_ops(char **oplist)
+{
+	int		ops;
+	int		i;
+	char	*line;
+
+	ops = 200;
+	i = 0;
+	oplist = (char **)ft_memalloc(ops * sizeof(char *));
+	if (!oplist)
 	{
 		write(1, "Error\n", 6);
 		return (NULL);
 	}
-	// stack->stack = link;
-	// stack->size = 1;
-	return (stack);
-}
-
-int		sort_check(char **oplist, t_stack *stack_a, int size)
-{
-	t_stack *stack_b;
-	int i;
-
-	stack_b = create_stack();
-	if (!stack_b)
-		return (0);
-	i = 0;
-	while (operations[i].op)
+	while (get_next_line(0, &line) != 0)
 	{
-		if (!ft_strcmp(operations[i].op, *oplist))
+		if (i == (ops - 1))
 		{
-			operations[i].func(stack_a, stack_b);
-			oplist++;
-			i = 0;
-		}
-		i++;
-	}
-	return (is_sorted(stack_a, size));
-}
-
-int		populate(int argc, char *argv[], t_stack *stack)
-{
-	int		i;
-	t_link	*links;
-	t_link	*tmp;
-
-	i = 1;
-	while (i < argc)
-	{
-		if (!links)
-		{
-			links = create_link(ft_atoi(argv[i]));
-			if (!links)
+			oplist = (char **)ft_realloc_safe(oplist, ops, ops + 200);
+			if (!oplist)
 			{
 				write(1, "Error\n", 6);
-				return (-1);
+				return (NULL);
 			}
-			stack->link = links;
+			ops += 200;
 		}
-		else
-		{
-			tmp = create_link(ft_atoi(argv[i]));
-			if (!tmp)
-			{
-				write(1, "Error\n", 6);
-				return (-1);
-			}
-			if (links->next)
-				printf("Error wtf? ->next = %p\n", links->next);
-			links->next = tmp;
-		}
-		//change this to set at the end?
-		stack->size++;
-		links = links->next;;
+		oplist[i++] = ft_strdup(line);
+		free(line);
 	}
-	return (1);
+	return (oplist);
 }
 
 int	main(int argc, char *argv[])
 {
-	t_stack	*stack_a;
-	int		i;
-	int		ops;
+	t_link	*stack_a;
+	t_link *deleteme;
 	char	**oplist;
-	char	*line;
+	int		i; //Del me.
 
 	if (argc <= 1)
 	{
 		write(1, "Error\n", 6);
 		return (-1);
 	}
-	stack_a = create_stack();
-	if (!stack_a)
+	stack_a = populate(argc, argv);
+	deleteme = stack_a;
+	while (stack_a)
 	{
-		write(1, "Error\n", 6);
-		return (-1);
+		printf("stack_a->n = (%d) %d\n", stack_a->prev->n, stack_a->n);
+		stack_a = stack_a->next;
 	}
-	if (!populate(argc, argv, stack_a))
-	{
-		write(1, "Error\n", 6);
-		return (-1);
-	}
-	i = 0;
-	// printf("in func:\n");
-	// while (i < argc)
-	// {
-	// 	printf("to_sort[%d] = %d\n", i, to_sort[i]);
-	// 	i++;
-	// }
-	i = 0;
-	ops = 200;
-	oplist = (char **)ft_memalloc(sizeof(char *) * ops);
-	if (!oplist)
-	{
-		write(1, "Error\n", 6);
-		return (-1);
-	}
-	while(get_next_line(0, &line) != 0)
-	{
-		if (i == (ops - 1))
-		{
-			oplist = (char **)ft_realloc_safe(oplist, ops, (ops + 200));
-			if (!oplist)
-			{
-				write(1, "Error\n", 6);
-				return (-1);
-			}
-			ops += 200;
-		}
-		oplist[i] = ft_strdup(line);
-		printf("Line = %s (stored as: \"%s\")\n", line, oplist[i]);
-		i++;
-	}
-	if (sort_check(oplist, stack_a, argc))
+	stack_a = deleteme;
+	oplist = fill_ops(oplist);
+	if (sort_check(oplist, stack_a))
 		printf("OK\n");
 	else
 		printf("KO\n");
+	// i = 0;
+	// while (oplist[i])
+	// {
+	// 	printf("oplist[%d] = %s\n", i, oplist[i]);
+	// 	i++;
+	// }
+	while (stack_a)
+	{
+		printf("stack_a->n = (%d) %d\n", stack_a->prev->n, stack_a->n);
+		stack_a = stack_a->next;
+	}
+	stack_a = deleteme;
+	//Check if its empty.
 	return (1);
 }
+
+
+// int	main(int argc, char *argv[])
+// {
+// 	t_link	*stack_a;
+// 	int		i;
+// 	int		ops;
+// 	char	**oplist;
+// 	char	*line;
+
+// 	if (argc <= 1)
+// 	{
+// 		write(1, "Error\n", 6);
+// 		return (-1);
+// 	}
+// 	stack_a = create_stack();
+// 	if (!stack_a)
+// 	{
+// 		write(1, "Error\n", 6);
+// 		return (-1);
+// 	}
+// 	if (!populate(argc, argv, stack_a))
+// 	{
+// 		write(1, "Error\n", 6);
+// 		return (-1);
+// 	}
+// 	i = 0;
+// 	ops = 200;
+// 	oplist = (char **)ft_memalloc(sizeof(char *) * ops);
+// 	if (!oplist)
+// 	{
+// 		write(1, "Error\n", 6);
+// 		return (-1);
+// 	}
+// 	while(get_next_line(0, &line) != 0)
+// 	{
+// 		if (i == (ops - 1))
+// 		{
+// 			oplist = (char **)ft_realloc_safe(oplist, ops, (ops + 200));
+// 			if (!oplist)
+// 			{
+// 				write(1, "Error\n", 6);
+// 				return (-1);
+// 			}
+// 			ops += 200;
+// 		}
+// 		oplist[i] = ft_strdup(line);
+// 		printf("Line = %s (stored as: \"%s\")\n", line, oplist[i]);
+// 		i++;
+// 	}
+// 	if (sort_check(oplist, stack_a, argc))
+// 		printf("OK\n");
+// 	else
+// 		printf("KO\n");
+// 	return (1);
+// }
