@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_checker.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 15:00:03 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/07 20:43:32 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/08 15:37:48 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,12 @@ void	swap_b(t_link **stack_a, t_link **stack_b);
 void	swap_ab(t_link **stack_a, t_link **stack_b);
 void	push_a(t_link **stack_a, t_link **stack_b);
 void	push_b(t_link **stack_a, t_link **stack_b);
+void	rot_a(t_link **stack_a, t_link **stack_b);
+void	rot_b(t_link **stack_a, t_link **stack_b);
+void	rot_ab(t_link **stack_a, t_link **stack_b);
+void	rev_rot_a(t_link **stack_a, t_link **stack_b);
+void	rev_rot_b(t_link **stack_a, t_link **stack_b);
+void	rev_rot_ab(t_link **stack_a, t_link **stack_b);
 
 struct	s_operations {
 	char	*op;
