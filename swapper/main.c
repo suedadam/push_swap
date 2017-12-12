@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/11 16:26:56 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/11 18:18:41 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,23 +151,6 @@ char	**fill_ops(char **oplist)
 	return (oplist);
 }
 
-
-void	print_stack(t_link *stack_a)
-{
-	t_link *save;
-	
-	save = stack_a;
-
-	printf("===========Stack ===========\n");
-	while (save)
-	{
-		printf("(%p;%d) %d (%p;%d)\n", save->prev, save->prev->n, save->n, save->next, (save->next) ? save->next->n : 0);
-		save = save->next;
-	}
-	printf("=========== EO Stack ===========\n");
-}
-
-
 void	push_min(t_link **stack_a, t_link **stack_b)
 {
 	int min;
@@ -177,27 +160,24 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 	min = save->n;
 	while (save)
 	{
-		printf("(%p;%d) %d (%p;%d)\n", save->prev, save->prev->n, save->n, save->next, (save->next) ? save->next->n : 0);
 		if (save->n <= min)
-		{
-			printf("SMALLER NUM = %d < %d\n", save->n, min);
 			min = save->n;
-		}
 		save = save->next;
 	}
-	printf("SMALLEST NUM - %d\n", min);
 	if ((*stack_a)->next && (*stack_a)->next->n == min)
+	{
+		printf("sa\n");
 		swap_a(stack_a, stack_b);
+	}
 	while (*stack_a)
 	{
-		print_stack(*stack_a);
-		// printf("stack_a (%p;%d) %d (%p;%d)\n", (*stack_a)->prev, (*stack_a)->prev->n, (*stack_a)->n, (*stack_a)->next, ((*stack_a)->next) ? (*stack_a)->next->n : 0);
 		if ((*stack_a)->n == min)
 		{
-			printf("found num - %d\n", min);
+			printf("pb\n");
 			push_b(stack_a, stack_b);
 			break ;
 		}
+		printf("ra\n");
 		rot_a(stack_a, stack_b);
 	}
 }
@@ -207,14 +187,12 @@ int	sortMoves(t_link **stack_a)
 	t_link	*stack_b = NULL;
 
 	while (*stack_a)
-	{
 		push_min(stack_a, &stack_b);
-	}
 	while (stack_b)
 	{
+		printf("pa\n");
 		push_a(stack_a, &stack_b);
 	}
-	printf("what\n");
 }
 
 int	main(int argc, char *argv[])
@@ -252,11 +230,11 @@ int	main(int argc, char *argv[])
 	// 	printf("oplist[%d] = %s\n", i, oplist[i]);
 	// 	i++;
 	// }
-	while (stack_a)
-	{
-		printf("stack_a->n = (%d) %d (%d)\n", stack_a->prev->n, stack_a->n, (stack_a->next) ? stack_a->next->n : 0);
-		stack_a = stack_a->next;
-	}
+	// while (stack_a)
+	// {
+	// 	printf("stack_a->n = (%d) %d (%d)\n", stack_a->prev->n, stack_a->n, (stack_a->next) ? stack_a->next->n : 0);
+	// 	stack_a = stack_a->next;
+	// }
 	stack_a = deleteme;
 	//Check if its empty.
 	return (1);

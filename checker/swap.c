@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 17:02:32 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/08 16:05:28 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/11 18:19:02 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ t_link	*test_create_link(t_link *prev, int num, t_link *next)
 void	push_a(t_link **stack_a, t_link **stack_b)
 {
 	t_link	*tmp;
-	t_link	*lastb;
 
 	if (*stack_b)
 	{
@@ -82,11 +81,11 @@ void	push_a(t_link **stack_a, t_link **stack_b)
 		(*stack_a) = tmp;
 		if ((*stack_a)->next)
 			(*stack_a)->next->prev = (*stack_a);
-		tmp = NULL;
 		if ((*stack_b)->next)
-			tmp = test_create_link((*stack_b)->prev, (*stack_b)->next->n, (*stack_b)->next->next);
+			(*stack_b)->next->prev = (*stack_b)->prev;
+		tmp = (*stack_b)->next;
 		free(*stack_b);
-		(*stack_b) = tmp;
+		*stack_b = tmp;
 	}
 }
 
@@ -103,7 +102,6 @@ t_link	*fetch_last(t_link *stack)
 void	push_b(t_link **stack_a, t_link **stack_b)
 {
 	t_link	*tmp;
-	t_link	*lastb;
 
 	if (*stack_a)
 	{
@@ -114,11 +112,11 @@ void	push_b(t_link **stack_a, t_link **stack_b)
 		(*stack_b) = tmp;
 		if ((*stack_b)->next)
 			(*stack_b)->next->prev = (*stack_b);
-		tmp = NULL;
 		if ((*stack_a)->next)
-			tmp = test_create_link((*stack_a)->prev, (*stack_a)->next->n, (*stack_a)->next->next);
+			(*stack_a)->next->prev = (*stack_a)->prev;
+		tmp = (*stack_a)->next;
 		free(*stack_a);
-		(*stack_a) = tmp;
+		*stack_a = tmp;
 	}
 }
 
