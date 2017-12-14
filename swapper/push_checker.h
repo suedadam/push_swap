@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 15:00:03 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/08 15:37:48 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/13 15:10:17 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 typedef struct	s_link {
 	struct s_link	*prev;
 	int				n;
+	size_t			placement;
 	struct s_link	*next;
 }				t_link;
 

@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/08 16:17:11 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/13 14:00:53 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,13 +134,17 @@ t_link	*populate(int argc, char *argv[])
 	return (save->next);
 }
 
+/*
+** Fix when ops < total operations it breaks and says KO :'(
+*/
+
 char	**fill_ops(char **oplist)
 {
 	int		ops;
 	int		i;
 	char	*line;
 
-	ops = 200;
+	ops = 80000;
 	i = 0;
 	oplist = (char **)ft_memalloc(ops * sizeof(char *));
 	if (!oplist)

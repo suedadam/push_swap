@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   oldswapper.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/13 16:55:56 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/13 16:59:52 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,8 @@ int		sort_check(t_link **stack_a)
 {
 	t_link	*save;
 
+	// perform_ops(oplist, stack_a);
 	save = *stack_a;
-	if (!save)
-		return (0);
 	while (save && save->next)
 	{
 		if (save->next->n < save->n)
@@ -154,127 +153,41 @@ char	**fill_ops(char **oplist)
 
 void	push_min(t_link **stack_a, t_link **stack_b)
 {
-	t_link	*save;
-	int		num;
-	int		c;
+	int min;
+	t_link *save;
 
 	save = *stack_a;
+	min = save->n;
+	while (save)
+	{
+		if (save->n <= min)
+			min = save->n;
+		save = save->next;
+	}
+	if ((*stack_a)->next && (*stack_a)->next->n == min)
+	{
+		printf("sa\n");
+		swap_a(stack_a, stack_b);
+	}
 	while (*stack_a)
 	{
-		num = (*stack_a)->n;
-		c = 0;
-		if (*stack_b)
-		{
-			// printf("Pre Game: %d < %d\n", num, (*stack_b && (*stack_b)->prev) ? (*stack_b)->prev->n : 0);
-			if (num < (*stack_b)->prev->n)
-			{
-				printf("pb\n");
-				push_b(stack_a, stack_b);
-				printf("rb\n");
-				rot_b(stack_a, stack_b);
-			}
-			else if (num > (*stack_b)->n)
-			{
-				printf("pb\n");
-				push_b(stack_a, stack_b);
-			}
-			else
-			{
-				// printf("stack_b = %p and %d < %d\n", *stack_b, num, (*stack_b) ? (*stack_b)->n : 0);
-				while (*stack_b && num < (*stack_b)->n)
-				{
-					c++;
-					// printf("before rot = %d\n", (*stack_b)->n);
-					printf("rb\n");
-					rot_b(stack_a, stack_b);
-					// printf("after rot = %d\n", (*stack_b)->n);
-				}
-				if (c)
-				{
-					printf("pb\n");
-					push_b(stack_a, stack_b);
-					while (c--)
-					{
-						printf("rrb\n");
-						rev_rot_b(stack_a, stack_b);					
-					}
-				}
-			}
-		}
-		else
+		if ((*stack_a)->n == min)
 		{
 			printf("pb\n");
 			push_b(stack_a, stack_b);
+			break ;
 		}
-		// push_b(stack_a, stack_b);
-		// if ((*stack_b)->next)
-		// {
-		// 	while ((*stack_b)->n < (*stack_b)->next->n)
-		// 	{
-
-		// 	}
-		// }
-
-
-		// if ((*stack_b)->next && (*stack_b)->n < (*stack_b)->next)
-		// {
-		// 	swap_b(stack_a, stack_b);
-		// }
+		printf("ra\n");
+		rot_a(stack_a, stack_b);
 	}
-
-
-	// if ((*stack_a)->next && (*stack_a)->next->n == min)
-	// {
-	// 	printf("sa\n");
-	// 	swap_a(stack_a, stack_b);
-	// }
-	// while (*stack_a)
-	// {
-	// 	if ((*stack_a)->n == min)
-	// 	{
-	// 		printf("pb\n");
-	// 		push_b(stack_a, stack_b);
-	// 		break ;
-	// 	}
-	// 	printf("ra\n");
-	// 	rot_a(stack_a, stack_b);
-	// }
-}
-
-int		rev_sort_check(t_link **stack_a)
-{
-	t_link	*save;
-
-	save = *stack_a;
-	if (!save)
-		return (0);
-	while (save && save->next)
-	{
-		if (save->next->n < save->n)
-			return (0);
-		save = save->next;
-	}
-	return (1);
 }
 
 int	sortMoves(t_link **stack_a)
 {
 	t_link	*stack_b = NULL;
-	t_link	*save;
 
-	while (*stack_a)
-	{
-		// printf("got here tho righ?\n");
+	while (*stack_a && sort_check(stack_a));
 		push_min(stack_a, &stack_b);
-	}
-	// printf("\n=======b stack =======\n");
-	// save = stack_b;
-	// while (save)
-	// {
-	// 	printf("%d\n", save->n);
-	// 	save = save->next;
-	// }
-	// printf("\n=======EOstack =======\n");
 	while (stack_b)
 	{
 		printf("pa\n");
