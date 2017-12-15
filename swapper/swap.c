@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 17:02:32 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/11 18:18:49 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/13 18:25:05 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,18 +74,23 @@ void	push_a(t_link **stack_a, t_link **stack_b)
 
 	if (*stack_b)
 	{
-		if (*stack_a)
-			tmp = test_create_link((*stack_a)->prev, (*stack_b)->n, (*stack_a));
-		else
-			tmp = test_create_link(NULL, (*stack_b)->n, NULL);
-		(*stack_a) = tmp;
-		if ((*stack_a)->next)
-			(*stack_a)->next->prev = (*stack_a);
 		if ((*stack_b)->next)
 			(*stack_b)->next->prev = (*stack_b)->prev;
-		tmp = (*stack_b)->next;
-		free(*stack_b);
-		*stack_b = tmp;
+		tmp = (*stack_b);
+		(*stack_b) = (*stack_b)->next;
+		// Fuck creating a new link, just use the old one? duh?
+		if (*stack_a)
+		{
+			tmp->prev = (*stack_a)->prev;
+			(*stack_a)->prev = tmp;
+			tmp->next = (*stack_a);
+		}
+		else
+		{
+			tmp->prev = tmp;
+			tmp->next = NULL;
+		}
+		(*stack_a) = tmp;
 	}
 }
 
@@ -105,34 +110,25 @@ void	push_b(t_link **stack_a, t_link **stack_b)
 
 	if (*stack_a)
 	{
-		if (*stack_b)
-			tmp = test_create_link((*stack_b)->prev, (*stack_a)->n, (*stack_b));
-		else
-			tmp = test_create_link(NULL, (*stack_a)->n, NULL);
-		(*stack_b) = tmp;
-		if ((*stack_b)->next)
-			(*stack_b)->next->prev = (*stack_b);
 		if ((*stack_a)->next)
 			(*stack_a)->next->prev = (*stack_a)->prev;
-		tmp = (*stack_a)->next;
-		free(*stack_a);
-		*stack_a = tmp;
+		tmp = (*stack_a);
+		(*stack_a) = (*stack_a)->next;
+		// Fuck creating a new link, just use the old one? duh?
+		if (*stack_b)
+		{
+			tmp->prev = (*stack_b)->prev;
+			(*stack_b)->prev = tmp;
+			tmp->next = (*stack_b);
+		}
+		else
+		{
+			tmp->prev = tmp;
+			tmp->next = NULL;
+		}
+		(*stack_b) = tmp;
 	}
 }
-
-// void	rot_a(t_link **stack_a, t_link **stack_b)
-// {
-// 	t_link *tmp;
-
-// 	if (*stack_a && (*stack_a)->next)
-// 	{
-// 		tmp = (*stack_a);
-// 		(*stack_a) = tmp->next;
-// 		tmp->prev->next = tmp;
-// 		tmp->next = NULL;
-// 		(*stack_a)->prev = tmp;
-// 	}
-// }
 
 void	rot_a(t_link **stack_a, t_link **stack_b)
 {

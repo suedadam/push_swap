@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/13 16:55:56 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/14 22:20:14 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,46 +39,6 @@ t_link	*create_link(int num)
 	}
 	link->n = num;
 	return (link);
-}
-
-int		perform_ops(char **oplist, t_link **stack_a)
-{
-	t_link	*stack_b;
-	t_link	*save;
-	int		i;
-
-	i = 0;
-	stack_b = NULL;
-	while (operations[i].op && *oplist)
-	{
-		if (!ft_strcmp(operations[i].op, *oplist))
-		{
-			operations[i].func(stack_a, &stack_b);
-			oplist++;
-			i = 0;
-		}
-		else
-			i++;
-	}
-	printf("\n-------Greedymother fucker--=-----\n");
-	save = stack_b;
-	while (stack_b)
-	{
-		// printf("stack_b->prev = %p\n", stack_b->prev);
-		printf("stack_b->n = (%d) %d (%d)\n", stack_b->prev->n, stack_b->n, (stack_b->next) ? stack_b->next->n : 0);
-		stack_b = stack_b->next;
-	}
-	stack_b = save;
-	printf("--------------------------\n");
-	save = *stack_a;
-	while (*stack_a)
-	{
-		// printf("stack_a->prev = %p\n", stack_a->prev);
-		printf("stack_a->n = (%d) %d (%d)\n", (*stack_a)->prev->n, (*stack_a)->n, ((*stack_a)->next) ? (*stack_a)->next->n : 0);
-		(*stack_a) = (*stack_a)->next;
-	}
-	*stack_a = save;
-	printf("\n-------End of Dick--=-----\n");
 }
 
 int		sort_check(t_link **stack_a)
@@ -161,84 +121,7 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 	save = *stack_a;
 	while (*stack_a)
 	{
-		num = (*stack_a)->n;
-		c = 0;
-		if (*stack_b)
-		{
-			// printf("Pre Game: %d < %d\n", num, (*stack_b && (*stack_b)->prev) ? (*stack_b)->prev->n : 0);
-			if (num < (*stack_b)->prev->n)
-			{
-				printf("pb\n");
-				push_b(stack_a, stack_b);
-				printf("rb\n");
-				rot_b(stack_a, stack_b);
-			}
-			else if (num > (*stack_b)->n)
-			{
-				printf("pb\n");
-				push_b(stack_a, stack_b);
-			}
-			else
-			{
-				// printf("stack_b = %p and %d < %d\n", *stack_b, num, (*stack_b) ? (*stack_b)->n : 0);
-				while (*stack_b && num < (*stack_b)->n)
-				{
-					c++;
-					// printf("before rot = %d\n", (*stack_b)->n);
-					printf("rb\n");
-					rot_b(stack_a, stack_b);
-					// printf("after rot = %d\n", (*stack_b)->n);
-				}
-				if (c)
-				{
-					printf("pb\n");
-					push_b(stack_a, stack_b);
-					while (c--)
-					{
-						printf("rrb\n");
-						rev_rot_b(stack_a, stack_b);					
-					}
-				}
-			}
-		}
-		else
-		{
-			printf("pb\n");
-			push_b(stack_a, stack_b);
-		}
-		// push_b(stack_a, stack_b);
-		// if ((*stack_b)->next)
-		// {
-		// 	while ((*stack_b)->n < (*stack_b)->next->n)
-		// 	{
-
-		// 	}
-		// }
-
-
-		// if ((*stack_b)->next && (*stack_b)->n < (*stack_b)->next)
-		// {
-		// 	swap_b(stack_a, stack_b);
-		// }
 	}
-
-
-	// if ((*stack_a)->next && (*stack_a)->next->n == min)
-	// {
-	// 	printf("sa\n");
-	// 	swap_a(stack_a, stack_b);
-	// }
-	// while (*stack_a)
-	// {
-	// 	if ((*stack_a)->n == min)
-	// 	{
-	// 		printf("pb\n");
-	// 		push_b(stack_a, stack_b);
-	// 		break ;
-	// 	}
-	// 	printf("ra\n");
-	// 	rot_a(stack_a, stack_b);
-	// }
 }
 
 int		rev_sort_check(t_link **stack_a)
@@ -257,35 +140,85 @@ int		rev_sort_check(t_link **stack_a)
 	return (1);
 }
 
+int		move_calc(t_link **stack_a, t_link **stack_b)
+{
+	static int	max = 0;
+	int	ops;
+	int num;
+
+	ops = 0;
+	num = (*stack_a)->n;
+	if (max > num)
+		num = max;
+	// 0 elements, 1 element or 2 elements
+	if (!*stack_b || (*stack_b)->prev == (*stack_b) || (*stack_b)->prev == (*stack_b)->next)
+	{
+		if (*stack_b)
+			printf("%p || %p == %p || %p == %p\n", *stack_b, (*stack_b)->prev, (*stack_b), (*stack_b)->prev, (*stack_b)->next);
+		else
+			printf("stack_b == NULL\n");
+		(*stack_a)->moves = ops;
+		return (0);
+	}
+	while (*stack_b)
+	{
+		if (num < (*stack_b)->prev->n && num > (*stack_b)->n)
+		{
+			(*stack_a)->moves = ops;
+			return (1);
+		}
+		else
+		{
+			printf("%d < %d && %d > %d\n", num, (*stack_b)->prev->n, num, (*stack_b)->n);
+		}
+		ops++;
+		(*stack_b) = (*stack_b)->next;
+	}
+	if (!ops)
+	{
+		printf("Error? %d calculated ops for (*stack_a)->n (->moves) %d\n", (*stack_a)->moves, (*stack_a)->n);
+	}
+	return (0);
+}
+
 int	sortMoves(t_link **stack_a)
 {
 	t_link	*stack_b = NULL;
 	t_link	*save;
+	int		ret;
 
-	while (*stack_a)
+	save = (*stack_a);
+	while (*stack_a && !sort_check(stack_a))
 	{
-		// printf("got here tho righ?\n");
-		push_min(stack_a, &stack_b);
+		if ((ret = move_calc(stack_a, &stack_b)))
+		{
+			printf("we calculated it biatch (%d) took %d moves\n", (*stack_a)->n, (*stack_a)->moves);
+			(*stack_a) = (*stack_a)->next;
+		}
+		else if (!ret && !(*stack_a)->moves)
+		{
+			printf("Pushing %d to stack b\n", (*stack_a)->n);
+			push_b(stack_a, &stack_b);
+		}
+		else
+		{
+			printf("wtf? %d\n", (*stack_a)->n);
+		}
 	}
-	// printf("\n=======b stack =======\n");
-	// save = stack_b;
-	// while (save)
+	(*stack_a) = save;
+	// rev_sort(stack_b);
+	// while (stack_b)
 	// {
-	// 	printf("%d\n", save->n);
-	// 	save = save->next;
+	// 	printf("pa\n");
+	// 	push_a(stack_a, &stack_b);
 	// }
-	// printf("\n=======EOstack =======\n");
-	while (stack_b)
-	{
-		printf("pa\n");
-		push_a(stack_a, &stack_b);
-	}
+	return (0);
 }
 
 int	main(int argc, char *argv[])
 {
 	t_link	*stack_a;
-	t_link *deleteme;
+	t_link	*deleteme;
 	int		i; //Del me.
 
 	if (argc <= 1)
