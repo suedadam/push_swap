@@ -6,7 +6,7 @@
 /*   By: asyed <asyed@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/14 22:20:14 by asyed            ###   ########.fr       */
+/*   Updated: 2017/12/15 12:47:02 by asyed            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,45 +140,93 @@ int		rev_sort_check(t_link **stack_a)
 	return (1);
 }
 
+
+
 int		move_calc(t_link **stack_a, t_link **stack_b)
 {
 	static int	max = 0;
-	int	ops;
-	int num;
+	int		ops;
+	int 	num;
+	t_link	*itt_sb;
+	t_link	*tmp;
 
 	ops = 0;
 	num = (*stack_a)->n;
-	if (max > num)
-		num = max;
+	if (num > max)
+		max = num;
+	else
+		printf("%d < %d\n", num, max);
+	itt_sb = (*stack_b);
 	// 0 elements, 1 element or 2 elements
-	if (!*stack_b || (*stack_b)->prev == (*stack_b) || (*stack_b)->prev == (*stack_b)->next)
+	if (!itt_sb || itt_sb->prev == itt_sb || itt_sb->prev == itt_sb->next)
 	{
-		if (*stack_b)
-			printf("%p || %p == %p || %p == %p\n", *stack_b, (*stack_b)->prev, (*stack_b), (*stack_b)->prev, (*stack_b)->next);
+		if (itt_sb)
+		{
+			printf("%p || %p == %p || %p == %p\n", itt_sb, itt_sb->prev, itt_sb, itt_sb->prev, itt_sb->next);
+			if (itt_sb->prev == itt_sb->next) // If we have 2 elements right now. ;Placing the third element. 
+			{
+				tmp = itt_sb->prev;
+				if (!tmp->next)
+				{
+					printf("tmp = the last one.\n");
+				}
+				else
+					printf("not equal to the last.\n");
+				while ((*stack_b)->prev != tmp)
+					rot_b(stack_a, stack_b);
+				if (*stack_b == tmp)
+					printf("yay its in the right position! (%d)\n", num);
+				else
+					printf("Wrong position, stack_b->n %d\n", (*stack_b)->n);
+			}
+		}
 		else
 			printf("stack_b == NULL\n");
 		(*stack_a)->moves = ops;
 		return (0);
 	}
-	while (*stack_b)
+	while (itt_sb)
 	{
-		if (num < (*stack_b)->prev->n && num > (*stack_b)->n)
+		// if (num < (*stack_b)->prev->n && num > (*stack_b)->n
+		// 	||
+		// 	num < )
+		if ((num < itt_sb->prev->n && num > itt_sb->n) //Between Case
+			|| (max == num && num > itt_sb->prev->n) //Largest number
+			|| (itt_sb->prev->n == max && num < itt_sb->n)) //Smallest number
 		{
+			printf("returned in here pls por favorrrrr\n");
 			(*stack_a)->moves = ops;
 			return (1);
 		}
 		else
 		{
-			printf("%d < %d && %d > %d\n", num, (*stack_b)->prev->n, num, (*stack_b)->n);
+			printf("%d < %d && %d > %d\n || (%d == %d && %d > %d)\n || (%d == %d && %d < %d)\n", num, itt_sb->prev->n, num, itt_sb->n, max, num, num, itt_sb->prev->n, itt_sb->prev->n, max, num, itt_sb->n);
 		}
 		ops++;
-		(*stack_b) = (*stack_b)->next;
+		itt_sb = itt_sb->next;
 	}
 	if (!ops)
 	{
 		printf("Error? %d calculated ops for (*stack_a)->n (->moves) %d\n", (*stack_a)->moves, (*stack_a)->n);
 	}
+	else
+	{
+		printf("test\n");
+	}
 	return (0);
+}
+
+void	clear_moves(t_link **stack_a)
+{
+	t_link *save;
+
+	save = *stack_a;
+
+	while (save)
+	{
+		save->moves = 0;
+		save = save->next;
+	}
 }
 
 int	sortMoves(t_link **stack_a)
@@ -190,19 +238,31 @@ int	sortMoves(t_link **stack_a)
 	save = (*stack_a);
 	while (*stack_a && !sort_check(stack_a))
 	{
-		if ((ret = move_calc(stack_a, &stack_b)))
+		if ((ret = move_calc(stack_a, &stack_b)) && (*stack_a)->moves)
 		{
 			printf("we calculated it biatch (%d) took %d moves\n", (*stack_a)->n, (*stack_a)->moves);
 			(*stack_a) = (*stack_a)->next;
 		}
-		else if (!ret && !(*stack_a)->moves)
+		else if (!(*stack_a)->moves)
 		{
-			printf("Pushing %d to stack b\n", (*stack_a)->n);
+			printf("====== Printing Stack (%d) ====\n", (*stack_a)->n);
+			printf("{BEFORE} Top of stack_b = %d\n", (stack_b) ? stack_b->n : 0);
 			push_b(stack_a, &stack_b);
+			printf("{AFTER} Top of stack_b = %d\n", stack_b->n);
+			save = stack_b;
+			while (save)
+			{
+				printf("(%d) %d (%d)\n", save->prev->n, save->n, (save->next) ? save->next->n : 0);
+				save = save->next;
+			}
+			printf("====== End of stack   ====\n");
+			clear_moves(stack_a);
+			// printf("Pushed %d to stack b (%d;%d && %d)\n", (*stack_a)->n, !ret && !(*stack_a)->moves, !ret, !(*stack_a)->moves);
 		}
 		else
 		{
 			printf("wtf? %d\n", (*stack_a)->n);
+			(*stack_a) = (*stack_a)->next;
 		}
 	}
 	(*stack_a) = save;
