@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/20 14:29:50 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/20 15:42:46 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,11 @@ int		rev_sort_check(t_link **stack_a)
 		return (0);
 	while (save && save->next)
 	{
-		if (save->next->n < save->n)
+		if (save->next->n > save->n)
+		{
+			printf("\e[1;36m{RC} %d > %d\e[0m\n", save->next->n, save->n);
 			return (0);
+		}
 		save = save->next;
 	}
 	return (1);
@@ -191,7 +194,6 @@ void	clear_moves(t_link **stack_a)
 	while (save)
 	{
 		save->moves = i++;
-		// printf("{clear_moves} %d->%d\n", save->n, save->moves);
 		save = save->next;
 	}
 }
@@ -218,11 +220,11 @@ int		pl_in_stack(int y, t_link *check)
 	return (i);
 }
 
-void	rotate_x(t_link	**stack, int i)
+void	rotate_x(t_link	**stack, int i, char *id)
 {
 	while (i-- > 0)
 	{
-		printf("ra\n");
+		printf("%s\n", id);
 		rot_a(stack, NULL);
 	}
 }
@@ -245,10 +247,22 @@ void	top_largest(t_link **stack)
 		printf("rb\n");
 		rot_b(NULL, stack);
 	}
-	if ((*stack)->n == max)
-		printf("\e[1;32mOK\n\e[0m");
-	else
-		printf("\e[1;31mKO\n\e[0m");
+	// if ((*stack)->n == max)
+	// 	printf("\e[1;32mOK\n\e[0m");
+	// else
+	// 	printf("\e[1;31mKO\n\e[0m");
+}
+
+void	print_stack(t_link *stack, char *prefix)
+{
+	while (stack)
+	{
+		if (prefix)
+			printf("%s(%d) %d (%d)\e[0m\n", prefix, stack->prev->n, stack->n, (stack->next) ? stack->next->n : 0);
+		else
+			printf("(%d) %d (%d)\e[0m\n", stack->prev->n, stack->n, (stack->next) ? stack->next->n : 0);
+		stack = stack->next;
+	}
 }
 
 void	lowest_res(t_link **stack_a, t_link **stack_b)
@@ -268,14 +282,24 @@ void	lowest_res(t_link **stack_a, t_link **stack_b)
 		tmp = tmp->next;
 	}
 	i = pl_in_stack(copy->n, (*stack_a));
-	rotate_x(stack_a, i);
-	copy->moves -= i;
+	rotate_x(stack_a, i, "ra");
+	// copy->moves -= i;
 	if (*stack_a == copy)
 	{
-		rotate_x(stack_b, copy->moves);
+		rotate_x(stack_b, copy->moves, "rb");
 		printf("pb\n");
 		push_b(stack_a, stack_b);
 		top_largest(stack_b);
+		if (rev_sort_check(stack_b))
+		{
+			// printf("\e[1;32m{RC} OK\e[0m\n");
+			// print_stack(*stack_b, "\e[1;32m{RC} ");
+		}
+		else
+		{
+			printf("\e[1;31m{RC} ERROR\e[0m\n");
+			// print_stack(*stack_b, "\e[1;31m{RC} ");
+		}
 	}
 	else
 	{
@@ -351,12 +375,12 @@ int	main(int argc, char *argv[])
 		write(1, "Error\n", 6);
 		return (-1);
 	}
-	test = stack_a;
-	while (test)
-	{
-		printf("(%d) %d (%d)\n", test->prev->n, test->n, (test->next) ? test->next->n : 0);
-		test = test->next;
-	}
+	// test = stack_a;
+	// while (test)
+	// {
+	// 	printf("(%d) %d (%d)\n", test->prev->n, test->n, (test->next) ? test->next->n : 0);
+	// 	test = test->next;
+	// }
 	sortMoves(&stack_a);
 	printf("\e[1;35m==Final==\e[0m\n");
 	if (sort_check(&stack_a))
