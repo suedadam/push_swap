@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/20 13:20:52 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/20 13:28:01 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,10 +251,16 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 				printf("rb\n");
 				rot_b(stack_a, stack_b);
 			}
-			// printf("====LOL=====\n");
+			printf("====LOL=====\n");
 			return ;
 		}
-		// printf("{%d} After move_calc() ->%d\n", tmp->n, tmp->moves);
+		printf("{%d} After move_calc() ->%d\n", tmp->n, tmp->moves);
+		tmp = tmp->next;
+	}
+	tmp = (*stack_a);
+	while (tmp)
+	{
+		printf("%d has %d moves\n", tmp->n, tmp->moves);
 		tmp = tmp->next;
 	}
 	tmp = (*stack_a);
@@ -265,12 +271,13 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 		if (tmp->moves < copy->moves)
 		{
 			copy = tmp;
-			// printf("Re-set copy -> %d (%d)\n", copy->n, copy->moves);
+			printf("Re-set copy -> %d (%d)\n", copy->n, copy->moves);
 		}
-		tmp->moves -= i++;
+		tmp->moves -= ++i;
 		tmp = tmp->next;
 	}
 	i = pl_in_stack(copy->n, *stack_a);
+	printf("placement in stack: %d\n", i);
 	while (i-- > 0)
 	{
 		printf("ra\n");
@@ -282,11 +289,19 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 		{
 			printf("rb\n");
 			rot_b(stack_a, stack_b);
+			tmp = (*stack_b);
+			printf("====== {CM PRINT} ======\n");
+			while (tmp)
+			{
+				printf("(%d) %d (%d)\n", tmp->prev->n, tmp->n, (tmp->next) ? tmp->next->n : 0);
+				tmp = tmp->next;
+			}
+			printf("==== {EO-CM PRINT} =====\n");
 		}
 		printf("pb\n");
 		push_b(stack_a, stack_b);
 		//#Hackzy way
-		// printf("=== Rotate for largest at the top ===\n");
+		printf("=== Rotate for largest at the top ===\n");
 		tmp = (*stack_b);
 		int max;
 		max = 0;
@@ -302,10 +317,17 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 			rot_b(stack_a, stack_b);
 		}
 		tmp = (*stack_b);
+		printf("====== {MR PRINT} ======\n");
+		while (tmp)
+		{
+			printf("(%d) %d (%d)\n", tmp->prev->n, tmp->n, (tmp->next) ? tmp->next->n : 0);
+			tmp = tmp->next;
+		}
+		printf("==== {EO-MR PRINT} =====\n");
 	}
 	else
 	{
-		printf("\e[1;31mERRORRRRRR stack_a = %d\n\e[0m", (*stack_a)->n);
+		printf("ERRORRRRRR stack_a = %d\n", (*stack_a)->n);
 	}
 }
 
@@ -317,32 +339,31 @@ int		sortMoves(t_link **stack_a)
 
 	while ((*stack_a) && startover(stack_a))
 	{
-		// save = stack_b;
-		// printf("=================================\n");
-		// while (save)
-		// {
-		// 	printf("SB: (%d) %d (%d)\n", save->prev->n, save->n, (save->next) ? save->next->n : 0);
-		// 	save = save->next;
-		// }
-		// printf("=================================\n");
+		save = stack_b;
+		printf("=================================\n");
+		while (save)
+		{
+			printf("SB: (%d) %d (%d)\n", save->prev->n, save->n, (save->next) ? save->next->n : 0);
+			save = save->next;
+		}
+		printf("=================================\n");
 		push_min(stack_a, &stack_b);
 	}
 	startover(&stack_b);
-	// printf("pushing all to stack_a\n");
+	printf("{sortMoves} starting Over. (%d)\n", stack_b->n);
+	save = stack_b;
+	printf("=================================\n");
+	while (save)
+	{
+		printf("SB: (%d) %d (%d)\n", save->prev->n, save->n, (save->next) ? save->next->n : 0);
+		save = save->next;
+	}
+	printf("=================================\n");
 	while (stack_b)
 	{
 		printf("pa\n");
 		push_a(stack_a, &stack_b);
 	}
-	// printf("{sortMoves} starting Over. (%d)\n", stack_b->n);
-	// save = stack_b;
-	// printf("=================================\n");
-	// while (save)
-	// {
-	// 	printf("SB: (%d) %d (%d)\n", save->prev->n, save->n, (save->next) ? save->next->n : 0);
-	// 	save = save->next;
-	// }
-	// 	printf("=================================\n");
 	return (0);
 }
 
@@ -364,6 +385,12 @@ int	main(int argc, char *argv[])
 		return (-1);
 	}
 	sortMoves(&stack_a);
+	if (sort_check(&stack_a))
+	{
+		printf("\e[1;32mOK\e[0m\n");
+	}
+	else
+		printf("\e[1;31mKO\e[0m\n");
 	printf("====== Done Sorting Printing Stack====\n");
 	deleteme = stack_a;
 	while (deleteme)
