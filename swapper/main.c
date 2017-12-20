@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/20 13:28:01 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/20 14:29:50 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,10 @@ int		sort_check(t_link **stack_a)
 	while (save && save->next)
 	{
 		if (save->next->n < save->n)
+		{
+			printf("%d < %d\n", save->next->n, save->n);
 			return (0);
+		}
 		save = save->next;
 	}
 	return (1);
@@ -150,38 +153,30 @@ int		move_calc(t_link **stack_a, t_link **stack_b)
 {
 	static int	max = 0;
 	t_link		*itt_s;
-	int			ops;
 	int			num;
+	int			ops;
 
 	num = (*stack_a)->n;
-	if (num > max)
-		max = num;
 	itt_s = (*stack_b);
+	ops = 0;
 	if (!itt_s || itt_s->prev == itt_s)
 	{
-		// printf("{@1}\n");
+		max = (num > max) ? num : max;
 		return (1);
 	}
 	while (itt_s)
 	{
-		if (itt_s->prev->n > num && num > itt_s->n)
+		if ((itt_s->prev->n > num && num > itt_s->n)
+			|| (itt_s->n == max && num < itt_s->prev->n)
+			|| (itt_s->n == max && num > max))
 		{
-			// printf("\e[1;32m{OK} %d > (%d) > %d\e[0m\n", itt_s->prev->n, num, itt_s->n);
+			max = (num > max) ? num : max;
 			(*stack_a)->moves += ops;
 			return (0);
 		}
-		else if (itt_s->n == max && num < itt_s->prev->n)
-		{
-			// printf("\e[1;36mLowest Number \e[0m\n");
-			(*stack_a)->moves += ops;
-			return (0);
-		}
-		// else
-		// 	printf("\e[1;31m{KO} %d > (%d) > %d\e[0m\n", itt_s->prev->n, num, itt_s->n);
 		ops++;
 		itt_s = itt_s->next;
 	}
-	// printf("\e[1;31mNO VALID PLACEMENT\e[0m\n");
 	return (0);
 }
 
@@ -196,7 +191,7 @@ void	clear_moves(t_link **stack_a)
 	while (save)
 	{
 		save->moves = i++;
-		printf("{clear_moves} %d->%d\n", save->n, save->moves);
+		// printf("{clear_moves} %d->%d\n", save->n, save->moves);
 		save = save->next;
 	}
 }
@@ -221,144 +216,116 @@ int		pl_in_stack(int y, t_link *check)
 		check = check->next;
 	}
 	return (i);
-}	
+}
 
-void	push_min(t_link **stack_a, t_link **stack_b)
+void	rotate_x(t_link	**stack, int i)
 {
+	while (i-- > 0)
+	{
+		printf("ra\n");
+		rot_a(stack, NULL);
+	}
+}
+
+void	top_largest(t_link **stack)
+{
+	int		max;
+	t_link	*tmp;
+
+	max = 0;
+	tmp = (*stack);
+	while (tmp)
+	{
+		if (tmp->n > max)
+			max = tmp->n;
+		tmp = tmp->next;
+	}
+	while ((*stack)->n != max)
+	{
+		printf("rb\n");
+		rot_b(NULL, stack);
+	}
+	if ((*stack)->n == max)
+		printf("\e[1;32mOK\n\e[0m");
+	else
+		printf("\e[1;31mKO\n\e[0m");
+}
+
+void	lowest_res(t_link **stack_a, t_link **stack_b)
+{
+	int		i;
 	t_link	*tmp;
 	t_link	*copy;
-	int		i;
 
-	tmp = (*stack_a);
-	clear_moves(&tmp);
-	while (tmp)
-	{
-		// printf("num: %d called move_calc(%d)\n", tmp->n, tmp->moves);
-		if (move_calc(&tmp, stack_b))
-		{
-			while (*stack_a && (*stack_a) != tmp)
-			{
-				printf("ra\n");
-				rot_a(stack_a, stack_b);
-			}
-			if ((*stack_a) == tmp)
-				printf("\e[1;32m Matched position\e[0m\n");
-			else
-				printf("\e[1;31mError - Mismatched position\e[0m\n");
-			push_b(stack_a, stack_b);
-			if ((*stack_b)->next && (*stack_b)->next->n < (*stack_b)->n)
-			{
-				printf("rb\n");
-				rot_b(stack_a, stack_b);
-			}
-			printf("====LOL=====\n");
-			return ;
-		}
-		printf("{%d} After move_calc() ->%d\n", tmp->n, tmp->moves);
-		tmp = tmp->next;
-	}
-	tmp = (*stack_a);
-	while (tmp)
-	{
-		printf("%d has %d moves\n", tmp->n, tmp->moves);
-		tmp = tmp->next;
-	}
 	tmp = (*stack_a);
 	copy = tmp;
 	i = 0;
 	while (tmp)
 	{
 		if (tmp->moves < copy->moves)
-		{
 			copy = tmp;
-			printf("Re-set copy -> %d (%d)\n", copy->n, copy->moves);
-		}
-		tmp->moves -= ++i;
+		tmp->moves -= i++;
 		tmp = tmp->next;
 	}
-	i = pl_in_stack(copy->n, *stack_a);
-	printf("placement in stack: %d\n", i);
-	while (i-- > 0)
-	{
-		printf("ra\n");
-		rot_a(stack_a, stack_b);
-	}
+	i = pl_in_stack(copy->n, (*stack_a));
+	rotate_x(stack_a, i);
+	copy->moves -= i;
 	if (*stack_a == copy)
 	{
-		while (copy->moves-- > 0)
-		{
-			printf("rb\n");
-			rot_b(stack_a, stack_b);
-			tmp = (*stack_b);
-			printf("====== {CM PRINT} ======\n");
-			while (tmp)
-			{
-				printf("(%d) %d (%d)\n", tmp->prev->n, tmp->n, (tmp->next) ? tmp->next->n : 0);
-				tmp = tmp->next;
-			}
-			printf("==== {EO-CM PRINT} =====\n");
-		}
+		rotate_x(stack_b, copy->moves);
 		printf("pb\n");
 		push_b(stack_a, stack_b);
-		//#Hackzy way
-		printf("=== Rotate for largest at the top ===\n");
-		tmp = (*stack_b);
-		int max;
-		max = 0;
-		while (tmp)
-		{
-			if (tmp->n > max)
-				max = tmp->n;
-			tmp = tmp->next;
-		}
-		while ((*stack_b)->n != max)
-		{
-			printf("rb\n");
-			rot_b(stack_a, stack_b);
-		}
-		tmp = (*stack_b);
-		printf("====== {MR PRINT} ======\n");
-		while (tmp)
-		{
-			printf("(%d) %d (%d)\n", tmp->prev->n, tmp->n, (tmp->next) ? tmp->next->n : 0);
-			tmp = tmp->next;
-		}
-		printf("==== {EO-MR PRINT} =====\n");
+		top_largest(stack_b);
 	}
 	else
 	{
-		printf("ERRORRRRRR stack_a = %d\n", (*stack_a)->n);
+		printf("Mis-calculation.\n");
 	}
+}
+
+/*
+** Never touch the order of (*stack_a);Thats what temp variables are for :) 
+*/
+
+void	push_min(t_link **stack_a, t_link **stack_b)
+{
+	t_link	*copy;
+	t_link	*tmp;
+
+	tmp = (*stack_a);
+	clear_moves(&tmp);
+	while (tmp)
+	{
+		if (move_calc(&tmp, stack_b))
+		{
+			//Rotate so that we're moving the correct variable on stack_a.
+			while (*stack_a && (*stack_a) != tmp)
+			{
+				printf("ra\n");
+				rot_a(stack_a, stack_b);
+			}
+			//Confirm position? We can do that on triggered debugging.
+			push_b(stack_a, stack_b);
+			if ((*stack_b)->next && (*stack_b)->next->n > (*stack_b)->n)
+			{
+				printf("rb\n");
+				rot_b(stack_a, stack_b);
+			}
+			return ;
+		}
+		tmp = tmp->next;
+	}
+	lowest_res(stack_a, stack_b);
 }
 
 int		sortMoves(t_link **stack_a)
 {
-	t_link	*stack_b = NULL;
-	t_link	*save;
-	int		ret;
+	t_link	*stack_b;	
 
-	while ((*stack_a) && startover(stack_a))
-	{
-		save = stack_b;
-		printf("=================================\n");
-		while (save)
-		{
-			printf("SB: (%d) %d (%d)\n", save->prev->n, save->n, (save->next) ? save->next->n : 0);
-			save = save->next;
-		}
-		printf("=================================\n");
+	stack_b = NULL;
+	while (*stack_a)
 		push_min(stack_a, &stack_b);
-	}
 	startover(&stack_b);
-	printf("{sortMoves} starting Over. (%d)\n", stack_b->n);
-	save = stack_b;
-	printf("=================================\n");
-	while (save)
-	{
-		printf("SB: (%d) %d (%d)\n", save->prev->n, save->n, (save->next) ? save->next->n : 0);
-		save = save->next;
-	}
-	printf("=================================\n");
 	while (stack_b)
 	{
 		printf("pa\n");
@@ -370,8 +337,8 @@ int		sortMoves(t_link **stack_a)
 int	main(int argc, char *argv[])
 {
 	t_link	*stack_a;
-	t_link	*deleteme;
-	int		i; //Del me.
+	t_link	*test;
+	int		i;
 
 	if (argc <= 1)
 	{
@@ -384,100 +351,19 @@ int	main(int argc, char *argv[])
 		write(1, "Error\n", 6);
 		return (-1);
 	}
+	test = stack_a;
+	while (test)
+	{
+		printf("(%d) %d (%d)\n", test->prev->n, test->n, (test->next) ? test->next->n : 0);
+		test = test->next;
+	}
 	sortMoves(&stack_a);
+	printf("\e[1;35m==Final==\e[0m\n");
 	if (sort_check(&stack_a))
 	{
 		printf("\e[1;32mOK\e[0m\n");
 	}
 	else
 		printf("\e[1;31mKO\e[0m\n");
-	printf("====== Done Sorting Printing Stack====\n");
-	deleteme = stack_a;
-	while (deleteme)
-	{
-		printf("SA: (%d) %d (%d)\n", deleteme->prev->n, deleteme->n, (deleteme->next) ? deleteme->next->n : 0);
-		deleteme = deleteme->next;
-	}
-	printf("====== Done printing stack ======\n");
-	// deleteme = stack_a;
-	// while (stack_a)
-	// {
-	// 	printf("stack_a->n = (%d) %d\n", stack_a->prev->n, stack_a->n);
-	// 	stack_a = stack_a->next;
-	// }
-	// stack_a = deleteme;
-	// if (sort_check(oplist, &stack_a))
-	// 	printf("OK\n");
-	// else
-	// 	printf("KO\n");
-	// i = 0;
-	// while (oplist[i])
-	// {
-	// 	printf("oplist[%d] = %s\n", i, oplist[i]);
-	// 	i++;
-	// }
-	// while (stack_a)
-	// {
-	// 	printf("stack_a->n = (%d) %d (%d)\n", stack_a->prev->n, stack_a->n, (stack_a->next) ? stack_a->next->n : 0);
-	// 	stack_a = stack_a->next;
-	// }
-	stack_a = deleteme;
-	//Check if its empty.
 	return (1);
 }
-
-
-// int	main(int argc, char *argv[])
-// {
-// 	t_link	*stack_a;
-// 	int		i;
-// 	int		ops;
-// 	char	**oplist;
-// 	char	*line;
-
-// 	if (argc <= 1)
-// 	{
-// 		write(1, "Error\n", 6);
-// 		return (-1);
-// 	}
-// 	stack_a = create_stack();
-// 	if (!stack_a)
-// 	{
-// 		write(1, "Error\n", 6);
-// 		return (-1);
-// 	}
-// 	if (!populate(argc, argv, stack_a))
-// 	{
-// 		write(1, "Error\n", 6);
-// 		return (-1);
-// 	}
-// 	i = 0;
-// 	ops = 200;
-// 	oplist = (char **)ft_memalloc(sizeof(char *) * ops);
-// 	if (!oplist)
-// 	{
-// 		write(1, "Error\n", 6);
-// 		return (-1);
-// 	}
-// 	while(get_next_line(0, &line) != 0)
-// 	{
-// 		if (i == (ops - 1))
-// 		{
-// 			oplist = (char **)ft_realloc_safe(oplist, ops, (ops + 200));
-// 			if (!oplist)
-// 			{
-// 				write(1, "Error\n", 6);
-// 				return (-1);
-// 			}
-// 			ops += 200;
-// 		}
-// 		oplist[i] = ft_strdup(line);
-// 		printf("Line = %s (stored as: \"%s\")\n", line, oplist[i]);
-// 		i++;
-// 	}
-// 	if (sort_check(oplist, stack_a, argc))
-// 		printf("OK\n");
-// 	else
-// 		printf("KO\n");
-// 	return (1);
-// }
