@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/20 23:58:33 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/21 00:29:37 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -334,68 +334,52 @@ void	lowest_res(t_link **stack_a, t_link **stack_b)
 			copy = tmp;
 		tmp = tmp->next;
 	}
-	// i = pl_in_stack(copy->n, (*stack_a));
-	if (copy->moves && copy->p_steps && copy->moves > copy->p_steps && !copy->r_dir)
-	{
-		ammor_rotate_x(stack_a, stack_b, copy->p_steps, 0);
-		copy->moves -= copy->p_steps;
-	}
-	else if (copy->moves && copy->p_steps && copy->moves < copy->p_steps && !copy->r_dir)
-	{
-		// if (copy->n == 54690)
-		// {
-		// 	printf("hi (%d -= %d)\n", copy->p_steps, copy->moves);
-		// }
-		ammor_rotate_x(stack_a, stack_b, copy->moves, 0);
-		copy->p_steps -= copy->moves;
-		newrotate_x(stack_a, copy->p_steps, "ra", 0);
-		copy->moves = 0;
-	}
-	// else if (copy->r_dir && copy->rev_moves && copy->p_steps && copy->rev_moves > copy->p_steps)
+	// length = list_length(*stack_a);
+	// if (copy->r_dir)
 	// {
-	// 	length = list_length(*stack_a);
-	// 	copy->p_steps = (length - copy->p_steps);
-	// 	ammor_rotate_x(stack_a, stack_b, copy->moves, 1);
-	// 	copy->rev_moves -= copy->p_steps;
+	// 	//forgot to use length;
+	// 	if (copy->moves && copy->p_steps && copy->p_steps >= (length > 2))
+	// 	{
+	// 		copy->p_steps = (length - copy->p_steps);
+	// 		// if (copy->rev_moves >= copy->p_steps)
+	// 		// {
+	// 		// 	newrotate_x(stack_a, copy->rev_moves, "rra", 1);
+	// 		// 	copy->rev_moves -= copy->p_steps;
+	// 		// 	copy->p_steps = 0;
+	// 		// }
+	// 		// else
+	// 		// {
+	// 		// 	newrotate_x(stack_a, copy->rev_moves, "rra", 1);
+	// 		// 	copy->p_steps -= copy->rev_moves;
+	// 		// 	copy->rev_moves = 0;
+	// 		// }
+	// 		newrotate_x(stack_a, copy->p_steps, "rra", 1);
+	// 	}
+	// 	else
+	// 		newrotate_x(stack_a, copy->p_steps, "ra", 0);
 	// }
-	else
-	{
-		if (copy->r_dir && copy->rev_moves && copy->p_steps)
+	// else
+	// {
+		if (!copy->r_dir && copy->moves && copy->p_steps)
 		{
-			length = list_length(*stack_a);
-			if (copy->rev_moves >= (length - copy->p_steps))
+			if (copy->moves >= copy->p_steps)
 			{
-				copy->p_steps = (length - copy->p_steps);
-				ammor_rotate_x(stack_a, stack_b, copy->p_steps, 1);
-				copy->rev_moves -= copy->p_steps;
+				ammor_rotate_x(stack_a, stack_b, copy->p_steps, 0);
+				copy->moves -= copy->p_steps;
+				copy->p_steps = 0;
 			}
-			else if (copy->rev_moves < (length - copy->p_steps)) //Disabled
+			else if (copy->moves < copy->p_steps)
 			{
-				copy->p_steps = ((length - copy->p_steps) - copy->rev_moves);
-				ammor_rotate_x(stack_a, stack_b, copy->rev_moves, 1);
-				if (copy->p_steps > 0)
-				{
-					printf("rra * %d\n", copy->p_steps);
-					newrotate_x(stack_a, copy->p_steps, "rra", 1);
-				}
-				copy->rev_moves = 0;
-				// copy->rev_moves -= copy->p_steps;
-			}
-			else
-			{
-				printf("never got here\n");
-				newrotate_x(stack_a, copy->p_steps, "ra", 0);
-			}
+				ammor_rotate_x(stack_a, stack_b, copy->moves, 0);
+				copy->p_steps -= copy->moves;
+				copy->moves = 0;
+			}			
 		}
+		if (copy->r_dir)
+			newrotate_x(stack_a, copy->p_steps, "rlola", 0);
 		else
 			newrotate_x(stack_a, copy->p_steps, "ra", 0);
-		// if (copy->n == 54690)
-		// {
-		// 	printf("bitch pls\n");
-		// }
-		// printf("%d\n", copy->r_dir);
-		// newrotate_x(stack_a, copy->p_steps, "ra", 0);
-	}
+	// }
 	// printf("\e[1;33m{RX} %d->p_steps %d\n", copy->n, copy->p_steps);
 	// print_stack(*stack_a, "\e[1;33m{RX}");
 	if (*stack_a == copy)
