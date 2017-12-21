@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/20 15:42:46 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/20 16:54:01 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -329,6 +329,7 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 				rot_a(stack_a, stack_b);
 			}
 			//Confirm position? We can do that on triggered debugging.
+			printf("pb\n");
 			push_b(stack_a, stack_b);
 			if ((*stack_b)->next && (*stack_b)->next->n > (*stack_b)->n)
 			{
