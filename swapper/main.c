@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/20 16:54:01 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/20 17:56:16 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ int		rev_sort_check(t_link **stack_a)
 	{
 		if (save->next->n > save->n)
 		{
-			printf("\e[1;36m{RC} %d > %d\e[0m\n", save->next->n, save->n);
+			// printf("\e[1;36m{RC} %d > %d\e[0m\n", save->next->n, save->n);
 			return (0);
 		}
 		save = save->next;
@@ -152,6 +152,31 @@ int		largest_val(t_link **stack_b)
 	return (largest);
 }
 
+
+void	top_largest(t_link **stack)
+{
+	int		max;
+	t_link	*tmp;
+
+	max = 0;
+	tmp = (*stack);
+	while (tmp)
+	{
+		if (tmp->n > max)
+			max = tmp->n;
+		tmp = tmp->next;
+	}
+	while ((*stack)->n != max)
+	{
+		printf("rb\n");
+		rot_b(NULL, stack);
+	}
+	// if ((*stack)->n == max)
+	// 	printf("\e[1;32mOK\n\e[0m");
+	// else
+	// 	printf("\e[1;31mKO\n\e[0m");
+}
+
 int		move_calc(t_link **stack_a, t_link **stack_b)
 {
 	static int	max = 0;
@@ -162,24 +187,37 @@ int		move_calc(t_link **stack_a, t_link **stack_b)
 	num = (*stack_a)->n;
 	itt_s = (*stack_b);
 	ops = 0;
-	if (!itt_s || itt_s->prev == itt_s)
+	if (!itt_s || itt_s->prev == itt_s
+		// (itt_s->next == itt_s->prev) //2 are placed.
+	)
 	{
 		max = (num > max) ? num : max;
 		return (1);
 	}
+	//New way to find max:
 	while (itt_s)
 	{
-		if ((itt_s->prev->n > num && num > itt_s->n)
-			|| (itt_s->n == max && num < itt_s->prev->n)
-			|| (itt_s->n == max && num > max))
+		max = (itt_s->n > max) ? itt_s->n : max;
+		itt_s = itt_s->next;
+	}
+	itt_s = (*stack_b);
+	//ENd of new way to find max
+	while (itt_s)
+	{
+		if ((itt_s->prev->n > num && num > itt_s->n) //Between case.
+			|| (itt_s->n == max && num < itt_s->prev->n) //Lowest case
+			|| (itt_s->n == max && num > max)) //Highest case
 		{
-			max = (num > max) ? num : max;
+			// printf("\e[1;36m{%d} (%d || %d || %d)\e[0m\n", num, (itt_s->prev->n > num && num > itt_s->n), (itt_s->n == max && num < itt_s->prev->n), (itt_s->n == max && num > max));
+			// max = (num > max) ? num : max;
 			(*stack_a)->moves += ops;
 			return (0);
 		}
 		ops++;
 		itt_s = itt_s->next;
 	}
+	printf("=====The following are errors====\n");
+	itt_s = (*stack_b);
 	return (0);
 }
 
@@ -229,38 +267,14 @@ void	rotate_x(t_link	**stack, int i, char *id)
 	}
 }
 
-void	top_largest(t_link **stack)
-{
-	int		max;
-	t_link	*tmp;
-
-	max = 0;
-	tmp = (*stack);
-	while (tmp)
-	{
-		if (tmp->n > max)
-			max = tmp->n;
-		tmp = tmp->next;
-	}
-	while ((*stack)->n != max)
-	{
-		printf("rb\n");
-		rot_b(NULL, stack);
-	}
-	// if ((*stack)->n == max)
-	// 	printf("\e[1;32mOK\n\e[0m");
-	// else
-	// 	printf("\e[1;31mKO\n\e[0m");
-}
-
 void	print_stack(t_link *stack, char *prefix)
 {
 	while (stack)
 	{
 		if (prefix)
-			printf("%s(%d) %d (%d)\e[0m\n", prefix, stack->prev->n, stack->n, (stack->next) ? stack->next->n : 0);
+			printf("%s(%d) %d[%d] (%d)\e[0m\n", prefix, stack->prev->n, stack->n, stack->moves, (stack->next) ? stack->next->n : 0);
 		else
-			printf("(%d) %d (%d)\e[0m\n", stack->prev->n, stack->n, (stack->next) ? stack->next->n : 0);
+			printf("(%d) %d[%d] (%d)\e[0m\n", stack->prev->n, stack->n, stack->moves,(stack->next) ? stack->next->n : 0);
 		stack = stack->next;
 	}
 }
@@ -283,23 +297,13 @@ void	lowest_res(t_link **stack_a, t_link **stack_b)
 	}
 	i = pl_in_stack(copy->n, (*stack_a));
 	rotate_x(stack_a, i, "ra");
-	// copy->moves -= i;
 	if (*stack_a == copy)
 	{
+		// printf("%d->moves (%d)\n", copy->n, copy->moves);
 		rotate_x(stack_b, copy->moves, "rb");
 		printf("pb\n");
 		push_b(stack_a, stack_b);
-		top_largest(stack_b);
-		if (rev_sort_check(stack_b))
-		{
-			// printf("\e[1;32m{RC} OK\e[0m\n");
-			// print_stack(*stack_b, "\e[1;32m{RC} ");
-		}
-		else
-		{
-			printf("\e[1;31m{RC} ERROR\e[0m\n");
-			// print_stack(*stack_b, "\e[1;31m{RC} ");
-		}
+		// print_stack(*stack_b, "\e[1;33m{PS}");
 	}
 	else
 	{
@@ -331,11 +335,8 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 			//Confirm position? We can do that on triggered debugging.
 			printf("pb\n");
 			push_b(stack_a, stack_b);
-			if ((*stack_b)->next && (*stack_b)->next->n > (*stack_b)->n)
-			{
-				printf("rb\n");
-				rot_b(stack_a, stack_b);
-			}
+			top_largest(stack_b);
+			// print_stack(*stack_b, "\e[1;32m{CHECK} ");
 			return ;
 		}
 		tmp = tmp->next;
@@ -351,6 +352,17 @@ int		sortMoves(t_link **stack_a)
 	while (*stack_a)
 		push_min(stack_a, &stack_b);
 	startover(&stack_b);
+	top_largest(&stack_b);
+	// if (rev_sort_check(&stack_b))
+	// {
+	// 	// printf("\e[1;32m{RC} OK\e[0m\n");
+	// 	// print_stack(*stack_b, "\e[1;32m{RC} ");
+	// }
+	// else
+	// {
+	// 	// printf("\e[1;31m{RC} ERROR\e[0m\n");
+	// 	// print_stack(*stack_b, "\e[1;31m{RC} ");
+	// }
 	while (stack_b)
 	{
 		printf("pa\n");
