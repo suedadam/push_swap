@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/22 14:18:21 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/22 14:31:25 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 #include <stdlib.h>
 #include <limits.h>
 
-int		g_ops;
+#ifdef DEBUG
+	int		g_ops;
+#endif
 
 struct s_operations operations[] = {
 	{"sa", &swap_a},
@@ -185,7 +187,6 @@ int	main(int argc, char *argv[])
 	t_link	*stack_a;
 	int		i;
 
-	g_ops = 0;
 	if (argc <= 1)
 	{
 		write(1, "Error\n", 6);

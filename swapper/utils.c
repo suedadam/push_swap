@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/22 13:00:18 by suedadam          #+#    #+#             */
-/*   Updated: 2017/12/22 13:29:39 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/22 14:30:43 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,7 @@ void	sort_3(t_link **stack_a, int length)
 void	print_ops(char *str)
 {
 	write(1, str, ft_strlen(str));
-	g_ops++;
+	#ifdef DEBUG
+		g_ops++;
+	#endif
 }

@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 15:00:03 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/22 13:29:37 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/22 14:29:49 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ struct	s_operations {
 	void	(*func)(t_link **stack_a, t_link **stack_b);
 }		t_operations;
 
-extern int g_ops;
-
+# ifdef DEBUG
+	extern int g_ops;
+# endif 
 #endif

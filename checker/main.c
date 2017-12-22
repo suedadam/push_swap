@@ -6,15 +6,12 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/22 14:24:28 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/22 14:29:18 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_checker.h"
 #include <stdlib.h>
-
-short	g_error = 0;
-size_t	g_tops;
 
 struct s_operations operations[] = {
 	{"sa", &swap_a},
@@ -64,7 +61,6 @@ int		perform_ops(char **oplist, t_link **stack_a)
 	}
 	if (i > 10)
 	{
-		g_error = 1;
 		write(1, "Error\n", 6);
 		return (0);
 	}
@@ -76,7 +72,7 @@ int		sort_check(char **oplist, t_link **stack_a)
 	t_link	*save;
 
 	if (!perform_ops(oplist, stack_a))
-		return (0);
+		return (-1);
 	save = *stack_a;
 	while (save && save->next)
 	{
@@ -133,7 +129,6 @@ char	**fill_ops(char **oplist)
 		oplist[i++] = ft_strdup(line);
 		free(line);
 	}
-	g_tops = i;
 	return (oplist);
 }
 
@@ -153,8 +148,8 @@ int	main(int argc, char *argv[])
 {
 	t_link	*stack_a;
 	char	**oplist;
+	int		ret;
 
-	g_tops = 0;
 	if (argc <= 1)
 	{
 		write(1, "Error\n", 6);
@@ -168,9 +163,9 @@ int	main(int argc, char *argv[])
 	}
 	oplist = NULL;
 	oplist = fill_ops(oplist);
-	if (!g_error && sort_check(oplist, &stack_a))
+	if ((ret = sort_check(oplist, &stack_a)) == 1)
 		printf("OK\n");
-	else if (!g_error)
+	else if (!ret)
 		printf("KO\n");
 	while (oplist && *oplist)
 	{
@@ -179,5 +174,5 @@ int	main(int argc, char *argv[])
 		oplist++;
 	}
 	freestack(&stack_a);
-	return (g_tops);
+	return (0);
 }
