@@ -6,7 +6,7 @@
 /*   By: suedadam <suedadam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 14:59:11 by asyed             #+#    #+#             */
-/*   Updated: 2017/12/21 00:29:37 by suedadam         ###   ########.fr       */
+/*   Updated: 2017/12/21 18:52:21 by suedadam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,6 +360,38 @@ void	lowest_res(t_link **stack_a, t_link **stack_b)
 	// }
 	// else
 	// {
+
+	if (copy->r_dir)
+	{
+		length = list_length(*stack_a);
+		if (copy->p_steps && ((length - copy->p_steps) < copy->p_steps))
+		{
+			if (copy->rev_moves && copy->p_steps)
+			{
+				copy->p_steps = (length - copy->p_steps);
+				if (copy->rev_moves >= copy->p_steps)
+				{
+					ammor_rotate_x(stack_a, stack_b, copy->p_steps, 1);
+					copy->rev_moves -= copy->p_steps;
+					copy->p_steps = 0;
+				}
+				else if (copy->rev_moves < copy->p_steps)
+				{
+					ammor_rotate_x(stack_a, stack_b, copy->rev_moves, 1);
+					copy->p_steps -= copy->rev_moves;
+					copy->rev_moves = 0;
+				}
+				else
+				{
+					printf("undefined behavior?\n");
+				}
+			}
+			newrotate_x(stack_a, copy->p_steps, "rra", 1);
+			copy->p_steps = 0;
+		}
+	}
+	else
+	{
 		if (!copy->r_dir && copy->moves && copy->p_steps)
 		{
 			if (copy->moves >= copy->p_steps)
@@ -375,10 +407,8 @@ void	lowest_res(t_link **stack_a, t_link **stack_b)
 				copy->moves = 0;
 			}			
 		}
-		if (copy->r_dir)
-			newrotate_x(stack_a, copy->p_steps, "rlola", 0);
-		else
-			newrotate_x(stack_a, copy->p_steps, "ra", 0);
+	}
+	newrotate_x(stack_a, copy->p_steps, "ra", 0);
 	// }
 	// printf("\e[1;33m{RX} %d->p_steps %d\n", copy->n, copy->p_steps);
 	// print_stack(*stack_a, "\e[1;33m{RX}");
