@@ -20,4 +20,4 @@ while (i < itterations):
 	p = subprocess.Popen(["../checker/checker " + lol], stdout=subprocess.PIPE, shell=True, stdin=subprocess.PIPE)
 	p.stdin.write(wtf)
 	i = i + 1
-print("Average operations = ", average / itterations)
+print "Average operations = ", average / itterations
