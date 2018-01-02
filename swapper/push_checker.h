@@ -85,4 +85,9 @@ void	newrotate_x(t_link	**stack, int i, char *id, short rev);
 void	ammor_rotate_x(t_link **stack_a, t_link **stack_b, int i, short rev);
 void	path_choose(t_link *stack);
 
+#ifdef DEBUG
+
+extern int g_ops;
+#endif
+
 #endif
