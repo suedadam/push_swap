@@ -12,21 +12,10 @@
 
 #ifndef FT_PUSH_CHECKER_H
 # define FT_PUSH_CHECKER_H
-#include "libft.h"
-
-typedef struct	s_link {
-	struct s_link	*prev;
-	int				n;
-	struct s_link	*next;
-}				t_link;
-
-typedef struct	s_stack {
-	t_link	*link;
-	int		size;
-}				t_stack;
+# include "libft.h"
+# include "structures.h"
 
 t_link	*create_link(int num);
-
 void	swap_a(t_link **stack_a, t_link **stack_b);
 void	swap_b(t_link **stack_a, t_link **stack_b);
 void	swap_ab(t_link **stack_a, t_link **stack_b);
@@ -47,10 +36,5 @@ char	**fill_ops(char **oplist);
 void	freestack(t_link **stack_a);
 void	oplist_free(char **oplist);
 t_link	*create_link(int num);
-
-struct	s_operations {
-	char	*op;
-	void	(*func)(t_link **stack_a, t_link **stack_b);
-}		t_operations;
 
 #endif

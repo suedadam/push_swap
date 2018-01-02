@@ -76,11 +76,6 @@ void	sort_3(t_link **stack_a, int length)
 void	print_ops(char *str)
 {
 	write(1, str, ft_strlen(str));
-#ifdef DEBUG
-
-	g_ops++;
-#endif
-
 }
 
 int		max_fetch(t_link *itt_s)

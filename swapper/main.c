@@ -141,10 +141,5 @@ int		main(int argc, char *argv[])
 		sort_3(&stack_a, i);
 	else
 		sortmoves(&stack_a);
-#ifdef DEBUG
-
-	ft_putnbr(g_ops);
-#endif
-
 	return (0);
 }
