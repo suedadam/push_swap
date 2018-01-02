@@ -39,6 +39,15 @@ void	rev_rot_a(t_link **stack_a, t_link **stack_b);
 void	rev_rot_b(t_link **stack_a, t_link **stack_b);
 void	rev_rot_ab(t_link **stack_a, t_link **stack_b);
 
+/*
+** utils.c
+*/
+
+char	**fill_ops(char **oplist);
+void	freestack(t_link **stack_a);
+void	oplist_free(char **oplist);
+t_link	*create_link(int num);
+
 struct	s_operations {
 	char	*op;
 	void	(*func)(t_link **stack_a, t_link **stack_b);

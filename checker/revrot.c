@@ -21,7 +21,7 @@ void	rev_rot_b(t_link **stack_a, t_link **stack_b)
 		save = (*stack_b)->prev;
 		save->next = (*stack_b);
 		save->prev->next = NULL;
-		(*stack_b) = save;		
+		(*stack_b) = save;
 	}
 	(void)stack_a;
 }
@@ -35,7 +35,7 @@ void	rev_rot_a(t_link **stack_a, t_link **stack_b)
 		save = (*stack_a)->prev;
 		save->next = (*stack_a);
 		save->prev->next = NULL;
-		(*stack_a) = save;		
+		(*stack_a) = save;
 	}
 	(void)stack_b;
 }

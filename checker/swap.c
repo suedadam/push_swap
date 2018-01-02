@@ -20,7 +20,7 @@ void	swap_a(t_link **stack_a, t_link **stack_b)
 	{
 		tmp = (*stack_a)->n;
 		(*stack_a)->n = (*stack_a)->next->n;
-		(*stack_a)->next->n = tmp;		
+		(*stack_a)->next->n = tmp;
 	}
 	(void)stack_b;
 }
@@ -33,7 +33,7 @@ void	swap_b(t_link **stack_a, t_link **stack_b)
 	{
 		tmp = (*stack_b)->n;
 		(*stack_b)->n = (*stack_b)->next->n;
-		(*stack_b)->next->n = tmp;		
+		(*stack_b)->next->n = tmp;
 	}
 	(void)stack_a;
 }

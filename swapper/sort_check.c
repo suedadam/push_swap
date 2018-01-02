@@ -55,7 +55,6 @@ int		largest_val(t_link **stack_b)
 
 	largest = 0;
 	tmp = (*stack_b);
-
 	while (tmp)
 	{
 		if (tmp->n > largest)

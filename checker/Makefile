@@ -18,6 +18,7 @@ SRC = main.c \
 		revrot.c \
 		rot.c \
 		swap.c \
+		utils.c \
 
 LIBFT = libft/
 

@@ -27,20 +27,6 @@ struct s_operations operations[] = {
 	{"rrr", &rev_rot_ab}
 };
 
-t_link	*create_link(int num)
-{
-	t_link *link;
-
-	link = (t_link *)ft_memalloc(sizeof(t_link));
-	if (!link)
-	{
-		write(1, "Error\n", 6);
-		return (NULL);
-	}
-	link->n = num;
-	return (link);
-}
-
 int		perform_ops(char **oplist, t_link **stack_a)
 {
 	t_link	*stack_b;
@@ -106,45 +92,7 @@ t_link	*populate(int argc, char *argv[])
 	return (save->next);
 }
 
-/*
-** Will only work for 80,000 operations or less :) 
-*/
-
-char	**fill_ops(char **oplist)
-{
-	int		ops;
-	int		i;
-	char	*line;
-
-	ops = 80000;
-	i = 0;
-	oplist = (char **)ft_memalloc(ops * sizeof(char *));
-	if (!oplist)
-	{
-		write(1, "Error\n", 6);
-		return (NULL);
-	}
-	while (get_next_line(0, &line) != 0)
-	{
-		oplist[i++] = ft_strdup(line);
-		free(line);
-	}
-	return (oplist);
-}
-
-void	freestack(t_link **stack_a)
-{
-	t_link	*tmp;
-
-	while (*stack_a)
-	{
-		tmp = (*stack_a)->next;
-		free(*stack_a);
-		(*stack_a) = tmp;
-	}
-}
-
-int	main(int argc, char *argv[])
+int		main(int argc, char *argv[])
 {
 	t_link	*stack_a;
 	char	**oplist;
@@ -155,8 +103,7 @@ int	main(int argc, char *argv[])
 		write(1, "Error\n", 6);
 		return (-1);
 	}
-	stack_a = populate(argc, argv);
-	if (!stack_a)
+	if (!(stack_a = populate(argc, argv)))
 	{
 		write(1, "Error\n", 6);
 		return (-1);
@@ -167,12 +114,7 @@ int	main(int argc, char *argv[])
 		printf("OK\n");
 	else if (!ret)
 		printf("KO\n");
-	while (oplist && *oplist)
-	{
-		free(*oplist);
-		*oplist = NULL;
-		oplist++;
-	}
+	oplist_free(oplist);
 	freestack(&stack_a);
 	return (0);
 }

@@ -40,7 +40,6 @@ void	rot_b(t_link **stack_a, t_link **stack_b)
 	(void)stack_a;
 }
 
-
 void	rot_ab(t_link **stack_a, t_link **stack_b)
 {
 	rot_a(stack_a, stack_b);

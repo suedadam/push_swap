@@ -12,22 +12,8 @@
 
 #ifndef FT_PUSH_CHECKER_H
 # define FT_PUSH_CHECKER_H
-#include "libft.h"
-
-typedef struct	s_link {
-	struct s_link	*prev;
-	int				n;
-	int				p_steps; //Placement steps.
-	int				moves;
-	int				rev_moves;
-	short			r_dir; //Reverse direction
-	struct s_link	*next;
-}				t_link;
-
-typedef struct	s_stack {
-	t_link	*link;
-	int		size;
-}				t_stack;
+# include "libft.h"
+# include "structures.h"
 
 /*
 ** main.c
@@ -38,13 +24,21 @@ void	lowest_res(t_link **stack_a, t_link **stack_b);
 int		move_calc(t_link **stack_a, t_link **stack_b);
 
 /*
+** res_assist.c
+*/
+void	reverse_process(t_link **stack_a, t_link **stack_b, t_link *copy);
+void	normal_process(t_link **stack_a, t_link **stack_b, t_link *copy);
+t_link	*step_counter(t_link **stack_a);
+
+/*
 ** utils.c
 */
 
 void	sort_3(t_link **stack_a, int length);
-int		sortMoves(t_link **stack_a);
+int		sortmoves(t_link **stack_a);
 void	clear_moves(t_link **stack_a);
 void	print_ops(char *str);
+int		max_fetch(t_link *itt_s);
 
 /*
 ** swap.c
@@ -91,12 +85,4 @@ void	newrotate_x(t_link	**stack, int i, char *id, short rev);
 void	ammor_rotate_x(t_link **stack_a, t_link **stack_b, int i, short rev);
 void	path_choose(t_link *stack);
 
-struct	s_operations {
-	char	*op;
-	void	(*func)(t_link **stack_a, t_link **stack_b);
-}		t_operations;
-
-# ifdef DEBUG
-	extern int g_ops;
-# endif 
 #endif

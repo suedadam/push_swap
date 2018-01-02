@@ -12,7 +12,7 @@
 
 #include "push_checker.h"
 
-void	newrotate_x(t_link	**stack, int i, char *id, short rev)
+void	newrotate_x(t_link **stack, int i, char *id, short rev)
 {
 	while (i-- > 0)
 	{
@@ -36,9 +36,8 @@ void	ammor_rotate_x(t_link **stack_a, t_link **stack_b, int i, short rev)
 		else
 		{
 			print_ops("rr\n");
-			rot_ab(stack_a, stack_b);			
+			rot_ab(stack_a, stack_b);
 		}
-
 	}
 }
 

@@ -14,12 +14,11 @@
 
 void	clear_moves(t_link **stack_a)
 {
-	t_link *save;
-	int	i;
+	t_link	*save;
+	int		i;
 
 	save = *stack_a;
 	i = 0;
-
 	while (save)
 	{
 		save->p_steps = i++;
@@ -30,9 +29,9 @@ void	clear_moves(t_link **stack_a)
 	}
 }
 
-int		sortMoves(t_link **stack_a)
+int		sortmoves(t_link **stack_a)
 {
-	t_link	*stack_b;	
+	t_link	*stack_b;
 
 	stack_b = NULL;
 	while (*stack_a)
@@ -77,7 +76,22 @@ void	sort_3(t_link **stack_a, int length)
 void	print_ops(char *str)
 {
 	write(1, str, ft_strlen(str));
-	#ifdef DEBUG
-		g_ops++;
-	#endif
+#ifdef DEBUG
+
+	g_ops++;
+#endif
+
+}
+
+int		max_fetch(t_link *itt_s)
+{
+	int	max;
+
+	max = 0;
+	while (itt_s)
+	{
+		max = (itt_s->n > max) ? itt_s->n : max;
+		itt_s = itt_s->next;
+	}
+	return (max);
 }

@@ -22,6 +22,7 @@ SRC = main.c \
 		sort_check.c \
 		swap.c \
 		utils.c \
+		res_assist.c \
 
 LIBFT = libft/
 

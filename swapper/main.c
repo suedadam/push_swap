@@ -15,7 +15,8 @@
 #include <limits.h>
 
 #ifdef DEBUG
-	int		g_ops;
+
+int	g_ops;
 #endif
 
 struct s_operations operations[] = {
@@ -32,36 +33,36 @@ struct s_operations operations[] = {
 	{"rrr", &rev_rot_ab}
 };
 
+int		eval_case(t_link *itt_s, int max, t_link *stack_a)
+{
+	if ((itt_s->prev->n > stack_a->n && stack_a->n > itt_s->n)
+		|| (itt_s->n == max && stack_a->n < itt_s->prev->n)
+		|| (itt_s->n == max && stack_a->n > max))
+	{
+		return (1);
+	}
+	else
+		return (0);
+}
+
 int		move_calc(t_link **stack_a, t_link **stack_b)
 {
 	static int	max = 0;
 	t_link		*itt_s;
-	int			num;
 	int			ops;
 	int			length;
 
-	num = (*stack_a)->n;
 	itt_s = (*stack_b);
-	ops = 0;
 	length = list_length(*stack_b);
-	if (!itt_s || itt_s->prev == itt_s)
+	if (!(ops = 0) && (!itt_s || itt_s->prev == itt_s))
 	{
-		max = (num > max) ? num : max;
+		max = ((*stack_a)->n > max) ? (*stack_a)->n : max;
 		return (1);
 	}
-	//New way to find max:
+	max = max_fetch(itt_s);
 	while (itt_s)
 	{
-		max = (itt_s->n > max) ? itt_s->n : max;
-		itt_s = itt_s->next;
-	}
-	itt_s = (*stack_b);
-	//ENd of new way to find max
-	while (itt_s)
-	{
-		if ((itt_s->prev->n > num && num > itt_s->n) //Between case.
-			|| (itt_s->n == max && num < itt_s->prev->n) //Lowest case
-			|| (itt_s->n == max && num > max)) //Highest case
+		if (eval_case(itt_s, max, *stack_a))
 		{
 			(*stack_a)->moves += ops;
 			(*stack_a)->rev_moves += (length - ops);
@@ -75,83 +76,22 @@ int		move_calc(t_link **stack_a, t_link **stack_b)
 
 void	lowest_res(t_link **stack_a, t_link **stack_b)
 {
-	int		length;
-	t_link	*tmp;
 	t_link	*copy;
 
-	tmp = (*stack_a);
-	copy = tmp;
-	length = list_length(*stack_a);
-	while (tmp)
-	{
-		if (tmp->r_dir)
-		{
-			length = list_length(*stack_a);
-			tmp->p_steps = (length - tmp->p_steps);
-			if ((tmp->p_steps + tmp->rev_moves) < ((copy->r_dir) ? copy->rev_moves : copy->moves) + copy->p_steps)
-				copy = tmp;
-		}
-		else
-		{
-			if ((tmp->p_steps + tmp->moves) < ((copy->r_dir) ? copy->rev_moves : copy->moves) + copy->p_steps)
-				copy = tmp;
-		}
-		tmp = tmp->next;
-	}
-	if (copy->r_dir)
-	{
-		if (copy->rev_moves && copy->p_steps)
-		{
-			if (copy->rev_moves >= copy->p_steps)
-			{
-				ammor_rotate_x(stack_a, stack_b, copy->p_steps, 1);
-				copy->rev_moves -= copy->p_steps;
-				copy->p_steps = 0;
-			}
-			else if (copy->rev_moves < copy->p_steps)
-			{
-				ammor_rotate_x(stack_a, stack_b, copy->rev_moves, 1);
-				copy->p_steps -= copy->rev_moves;
-				copy->rev_moves = 0;
-			}
-		}
-		newrotate_x(stack_a, copy->p_steps, "rra\n", 1);
-		copy->p_steps = 0;
-	}
-	else
-	{
-		if (copy->moves && copy->p_steps)
-		{
-			if (copy->moves >= copy->p_steps)
-			{
-				ammor_rotate_x(stack_a, stack_b, copy->p_steps, 0);
-				copy->moves -= copy->p_steps;
-				copy->p_steps = 0;
-			}
-			else if (copy->moves < copy->p_steps)
-			{
-				ammor_rotate_x(stack_a, stack_b, copy->moves, 0);
-				copy->p_steps -= copy->moves;
-				copy->moves = 0;
-			}	
-		}
-		newrotate_x(stack_a, copy->p_steps, "ra\n", 0);
-	}
+	copy = step_counter(stack_a);
+	(copy->r_dir) ? reverse_process(stack_a, stack_b, copy) :
+	normal_process(stack_a, stack_b, copy);
 	if (*stack_a == copy)
 	{
-		if (copy->r_dir)
-			newrotate_x(stack_b, copy->rev_moves, "rrb\n", 1);
-		else
-			newrotate_x(stack_b, copy->moves, "rb\n", 0);
+		newrotate_x(stack_b, (copy->r_dir) ? copy->rev_moves : copy->moves,
+			(copy->r_dir) ? "rrb\n" : "rb\n", copy->r_dir);
 		print_ops("pb\n");
 		push_b(stack_a, stack_b);
 	}
-	else
-		printf("Mis-calculation. (%d || %d) (%d instead of %d)\n", (*stack_a)->prev == copy, (((*stack_a)->next) ? (*stack_a)->next == copy : 0), (*stack_a)->n, copy->n);
 }
 
 /*
-** Never touch the order of (*stack_a);Thats what temp variables are for :) 
+** Never touch the order of (*stack_a);Thats what temp variables are for :)
 */
 
 void	push_min(t_link **stack_a, t_link **stack_b)
@@ -164,13 +104,11 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 	{
 		if (move_calc(&tmp, stack_b))
 		{
-			//Rotate so that we're moving the correct variable on stack_a.
 			while (*stack_a && (*stack_a) != tmp)
 			{
 				print_ops("ra\n");
 				rot_a(stack_a, stack_b);
 			}
-			//Confirm position? We can do that on triggered debugging.
 			print_ops("pb\n");
 			push_b(stack_a, stack_b);
 			top_largest(stack_b);
@@ -182,7 +120,7 @@ void	push_min(t_link **stack_a, t_link **stack_b)
 	lowest_res(stack_a, stack_b);
 }
 
-int	main(int argc, char *argv[])
+int		main(int argc, char *argv[])
 {
 	t_link	*stack_a;
 	int		i;
@@ -192,21 +130,21 @@ int	main(int argc, char *argv[])
 		write(1, "Error\n", 6);
 		return (-1);
 	}
-	stack_a = populate(argc, argv);
-	if (!stack_a)
+	if (!(stack_a = populate(argc, argv)))
 	{
 		write(1, "Error\n", 6);
 		return (-1);
 	}
 	if (sort_check(&stack_a))
 		return (0);
-	i = list_length(stack_a);
-	if (i <= 3)
+	if ((i = list_length(stack_a)) <= 3)
 		sort_3(&stack_a, i);
 	else
-		sortMoves(&stack_a);
-	#ifdef DEBUG
-		ft_putnbr(g_ops);
-	#endif
+		sortmoves(&stack_a);
+#ifdef DEBUG
+
+	ft_putnbr(g_ops);
+#endif
+
 	return (0);
 }
